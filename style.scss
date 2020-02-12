@@ -30,7 +30,8 @@ body {
   padding: 0 10px;
   width: 100%;
   padding: 0px 108px 54px 108px;
-  margin-top: 100px;
+  margin-top: 50px;
+  margin-bottom: 0px;
 }
 
 .container {
@@ -164,7 +165,7 @@ img {
 //
 
 .wrapper-masthead {
-  margin-bottom: 50px;
+  margin-bottom: 0px;
 }
 
 .masthead {
@@ -286,15 +287,16 @@ nav {
 }
 
 .wrapper-footer {
-  margin-top: 50px;
+  margin-top: 20px;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   background-color: $lightGray;
 }
 
 footer {
-  padding: 20px 0;
+  padding: 0px 0;
   text-align: center;
+  font-size: 10px;
 }
 
 .highlight .gutter {
