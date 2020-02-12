@@ -12,30 +12,40 @@
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/zenburn.css" />
     <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
+    <link
+        crossorigin="anonymous"
+        rel="stylesheet"
+        id="penscratch-2-fonts-css"
+        href="https://fonts.googleapis.com/css?family=Open+Sans"
+        media="all"
+    >
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         tex2jax: {
           inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-          processEscapes: true
-        }
-      });
+          processEscapes: true,
+        },
+    });
     </script>    
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
-
-    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
   </head>
 
   <body>
     <div class="wrapper-masthead">
-      <div class="container">
+      <div class="head-container">
         <header class="masthead clearfix">
           <a href="{{ site.baseurl }}/" class="site-avatar"><img src="{{ site.avatar }}" /></a>
 
           <div class="site-info">
-            <h1 class="site-name"><a href="{{ site.baseurl }}/">{{ site.name }}</a></h1>
-            <p class="site-description">{{ site.description }}</p>
+            <a href="/index.html">
+            <img src="{{ site.baseurl }}/images/me.png">
+            </a>
+            <br>
+            Tarcísio Fischer
+            <br>
+            <p style="font-size: 11px; margin: 0px">Blog pessoal</p>
           </div>
 
           <nav>

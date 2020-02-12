@@ -18,24 +18,36 @@ html {
 }
 
 body {
-	background: $white;
-  font: 18px/1.4 "Roboto Slab", $helvetica;
-  color: $darkGray;
+  background: #F6F6F6;
+  font: 18px/1.4 "Open Sans";
+  color: #666;
+}
+
+.head-container {
+  background: #FFF;
+  margin: 0 auto;
+  max-width: 937px;
+  padding: 0 10px;
+  width: 100%;
+  padding: 0px 108px 54px 108px;
+  margin-top: 100px;
 }
 
 .container {
+  background: #FFF;
   margin: 0 auto;
-  max-width: 740px;
+  max-width: 937px;
   padding: 0 10px;
   width: 100%;
+  padding: 54px 108px 54px 108px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: $helveticaNeue;
-  color: $darkerGray;
+  font-family: "Open Sans";
+  color: #333;
   font-weight: bold;
 
-  line-height: 1.7;
+  line-height: 1.2;
   margin: 1em 0 15px;
   padding: 0;
 
@@ -66,6 +78,7 @@ h4 {
 
 p {
   margin: 15px 0;
+  line-height: 1.8;
 }
 
 a {
@@ -212,7 +225,7 @@ img {
 
 nav {
   float: right;
-  margin-top: 23px; // @TODO: Vertically middle align
+  margin-top: 50px;
   font-family: $helveticaNeue;
   font-size: 18px;
 
@@ -237,9 +250,8 @@ nav {
   }
 }
 
-//
-// .main
-//
+#main {
+}
 
 .posts > .post {
   padding-bottom: 2em;
@@ -269,6 +281,8 @@ nav {
     text-transform: uppercase;
     font-size: 15px;
   }
+
+  text-align: justify;
 }
 
 .wrapper-footer {
@@ -283,12 +297,43 @@ footer {
   text-align: center;
 }
 
-.highlight {
-  overflow: none;
-}
-
 .highlight .gutter {
   padding-right: 20px;
+}
+
+.highlight .lineno {
+  background-color: #303030;
+  padding-left: 20px;
+  padding-right: 5px;
+}
+
+.repo_card {
+    border: 1px solid #999;
+    width: 330px;
+    height: 450px;
+    text-align: center;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+}
+
+.repo_card img {
+    border: 1px solid #999;
+}
+
+.repo_card h1 {
+    margin: 10px;
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.repo_card p {
+    margin: 10px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: justify;
 }
 
 // Settled on moving the import of syntax highlighting to the bottom of the CSS
