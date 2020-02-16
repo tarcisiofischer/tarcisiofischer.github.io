@@ -46,7 +46,9 @@ $$
 - c \Delta t f^{1, 0}
 =
 \Delta s^2 f_o^{1, 1} + \Delta s^2 \Delta t s^{1, 1}
+$$
 
+$$
 [\Delta s^2 + 4 c \Delta t]f^{1,2}
 - c \Delta t f^{2, 2}
 - c \Delta t f^{0, 2}
@@ -54,7 +56,9 @@ $$
 - c \Delta t f^{1, 1}
 =
 \Delta s^2 f_o^{1, 2} + \Delta s^2 \Delta t s^{1, 2}
+$$
 
+$$
 [\Delta s^2 + 4 c \Delta t]f^{2,1}
 - c \Delta t f^{3, 1}
 - c \Delta t f^{1, 1}
