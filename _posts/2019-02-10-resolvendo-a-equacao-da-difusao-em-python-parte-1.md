@@ -221,4 +221,3 @@ que você queira ler sobre, pode comentar também (Exemplos: paralelização, in
 interfaces gráficas, testes automatizados, algum algoritmo numérico específico, etc).
 
 Até a próxima!
-
