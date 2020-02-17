@@ -41,6 +41,9 @@ body {
   padding: 0 10px;
   width: 100%;
   padding: 54px 108px 54px 108px;
+  @media (max-width : 500px) {
+      padding: 5px 8px 5px 8px;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
