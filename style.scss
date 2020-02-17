@@ -23,6 +23,14 @@ body {
   color: #666;
 }
 
+@media (max-width : 500px) {
+  body {
+    background: #F6F6F6;
+    font: 16px/1.4 "Open Sans";
+    color: #666;
+  }
+}
+
 .head-container {
   background: #FFF;
   margin: 0 auto;
