@@ -4,15 +4,12 @@ title: Resolvendo a equação de difusão em Python - Parte 3
 ---
 
 Chegamos ao terceiro post da série. Até agora, ignorando o termo fonte,
-construímos todos os termos para montar e resolver o sistema linear. Nesse post,
-nos concentraremos em uma das partes que eu mais gosto nesse processo: a solução
-do sistema linear.
-
+temos todos os termos para montar e resolver o sistema linear. Nesse post,
+nos concentraremos nessa, que é uma das partes que eu mais gosto nesse processo!
 No próximo post da série, finalmente colocaremos todo o processo em um loop para
-resolver a parcela transiente, e finalmente faremos a visualização dos
-resultados.
+resolver a parcela transiente, e faremos a visualização dos resultados.
 
-Conforme pedidos, vou extender essa série para 5 posts, ao invés de 4. No
+Conforme pedidos, vou extender essa série para 5 posts (Ao invés de 4). No
 quinto, trabalharemos um pouco na integração de Python com C++, ou seja,
 chamaremos uma função implementada em C++ a partir do Python. Aguardem ;)
 
@@ -35,7 +32,7 @@ x = A^{-1}b
 $$
 
 Portanto, para resolver o problema, precisamos "simplesmente" inverter a matriz
-$A$ e multiplicar pelo vetor $b$. E de fato, isso funciona, conforme pode ser
+$A$ e multiplicar pelo vetor $b$. De fato, isso funciona, conforme pode ser
 observado no código a seguir:
 
 {% highlight python linenos %}
@@ -84,24 +81,30 @@ plt.imshow(result)
 plt.show()
 {% endhighlight %}
 
+{:refdef: style="text-align: center;"}
+![Solução do sistema linear](/images/post3-img1.png)
+{: refdef}
+
 O procedimento de inversão de uma matriz, porém, é bastante caro
 computacionalmente. Dessa forma, é comum optarmos por outros métodos que
 solucionam ou aproximam a solução do sistema linear, seja por métodos iterativos
 ou por métodos diretos.
 
 Antes que alguém comente, é verdade que, para casos
-simples como o do presente post, você pode inverter a matriz uma vez e
-guarda-la, de forma que a solução do sistema fica consideravelmente mais barata.
-Porém, vou considerar aqui que a inversão faz parte do processo de solução,
-como se fosse **sempre** necessário calcular a inversão novamente. Isso vai ser
-verdade para casos reais e, portanto, é uma hipótese relevante a ser admitida.
+simples como o do presente post, é possível inverter a matriz uma vez e
+guarda-la, de forma que a solução do sistema fica reduzido a um produto
+matriz-vetor. Porém, vou considerar aqui que a inversão faz parte do processo de
+solução, sendo **sempre** necessário calcular a inversão novamente. Isso em
+geral vai ser o caso, em problemas do dia-a-dia, portanto, é uma hipótese
+relevante de ser admitida.
 
 Meu objetivo aqui não é dar uma aula sobre métodos de solução de sistemas
 lineares (Muito embora seria muito legal). Ao invés disso, vou apenas
-utilizar e comparar o tempo de execução de vários solvers lineares disponíveis
-na SciPy. Existem várias outras bibliotecas com solvers lineares, como por
-exemplo, a [PETSc](https://www.mcs.anl.gov/petsc/). Mas vamos nos manter no
-"feijão com arroz" do desenvolvedor numérico, por enquanto.
+utilizar e comparar o tempo de execução de alguns solvers lineares disponíveis
+na SciPy. Vale mencionar que existem outras bibliotecas com solvers lineares.
+Uma que me sinto obrigado a comentar é a [PETSc](https://www.mcs.anl.gov/petsc/).
+Mas vamos nos manter no "feijão com arroz" do desenvolvedor numérico, por
+enquanto, utilizando as funções da SciPy.
 
 Abaixo, deixo a parte relevante do script Python que compara a solução do
 sistema linear utilizando (na ordem):
@@ -134,10 +137,6 @@ def solve_2d_linalg_gmres():
     return x.reshape((N, N))
 {% endhighlight %}
 
-{:refdef: style="text-align: center;"}
-![Solução do sistema linear](/images/post3-img1.png)
-{: refdef}
-
 Com o detalhe que os métodos esparsos necessitam da matriz $A$ convertida para
 esparsa. Tentei "documentar" isso no código por meio do nome das variáveis.
 Dessa forma, sp_A_csr é a versão esparsa (sp) de $A$ em CSR, e sp_A_csc a
@@ -147,8 +146,9 @@ versão esparsa em CSC.
 
 Para fazer a comparação, estou utilizando o [pandas](https://pandas.pydata.org/).
 Montei uma pequena estrutura de dicionários pra guardar os dados de cada caso.
-Aqui, não vou observar o erro na solução final (O que seria interessante,
-principalmente para os métodos iterativos), e não vou utilizar pré-condicionadores.
+Aqui, não vou observar o erro (imprecisão dos solvers) na solução final, e não
+vou utilizar pré-condicionadores.
+
 A ideia geral é simplesmente executar cada um dos métodos, variando o tamanho
 da matriz com $N=10$ até $N=40$, e guardar o tempo de execução para resolver
 o sistema linear 1000 vezes (Utilizando [timeit](https://docs.python.org/2/library/timeit.html)).
@@ -237,7 +237,7 @@ matriz esparsa.
 # Resultados e conclusão
 
 Foram, então, gerados dois resultados relevantes com a execução do código acima:
-(a) O plot comparativo para cada método e (b) O print com os tempos absolutos.
+(a) O print com os tempos absolutos e (b) O plot comparativo para cada método.
 Os dois contém a mesma informação, mas com apresentação diferente:
 
 {% highlight python linenos %}
