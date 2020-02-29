@@ -286,14 +286,14 @@ solve_diffusion_equation(
     results_callbacks=[animated_plot(0.0, 10.0),]
 )
 
-{:refdef: style="text-align: center;"}
-![](/images/post4-img3.gif)
-{: refdef}
-
 # Avoid exiting before all images are shown
 from matplotlib import pyplot as plt
 plt.show(block=True)
 {% endhighlight %}
+
+{:refdef: style="text-align: center;"}
+![](/images/post4-img3.gif)
+{: refdef}
 
 Fica como exercício ao leitor tentar fazer o plot dos valores centrais
 dinâmicamente ;) Outros exercícios legais, que ficam como sugestão para quem
