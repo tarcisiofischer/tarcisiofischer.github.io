@@ -17,8 +17,8 @@ pela relativa facilidade em paralelizar pequenas porções de código ["embaraç
 
 Na aproximação de solução de equações diferenciais parciais utilizando a técnica
 de [elementos finitos](https://pt.wikipedia.org/wiki/M%C3%A9todo_dos_elementos_finitos),
-a matriz de rigidez global é calculada em um procedimento conhecido como "assembly".
-Basicamente, é uma operação de soma transladada em uma matriz grande.
+a matriz de rigidez global é obtida em um procedimento conhecido como "assembly".
+Basicamente, é uma operação de sobreposição das matrizes elementares.
 Essa operação pode ser custosa dependendo do número de elementos (Quanto mais elementos, maior a matriz), mesmo
 nos casos que ela só é calculada uma única vez. Normalmente, é utilizada uma estrutura
 de dados de matriz esparsa para compor essa matriz global.
@@ -33,7 +33,7 @@ a discretização pelo método de elementos finitos. O procedimento
 consiste em dividir uma matriz grande e esparsa em diversas matrizes menores,
 computando cada uma delas individualmente e posteriormente fazendo a soma posicionada
 na matriz global. A figura abaixo ilustra essa ideia. Cada bloco colorido é uma matriz
-local, enquanto a composição delas na matriz maior forma a matriz de rigidez global.
+elementar, enquanto a sobreposição delas na matriz maior forma a matriz de rigidez global.
 
 {:refdef: style="text-align: center;"}
 ![](/images/post6-img2.png)
