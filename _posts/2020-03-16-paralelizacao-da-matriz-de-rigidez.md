@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Paralelização da matriz de rigidez de elementos finitos em Python com joblib
+title: Paralelização da montagem da matriz de rigidez de elementos finitos em Python com joblib
 ---
 
 Em linguagens como Matlab e C++ com [openmp](https://www.openmp.org/), temos a possibilidade de paralelizar
