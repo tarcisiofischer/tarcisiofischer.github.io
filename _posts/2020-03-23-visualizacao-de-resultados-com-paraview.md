@@ -81,18 +81,17 @@ for polyhedron in polyhedrons:
     unstructured_grid.InsertNextCell(vtk.VTK_POLYHEDRON, face_stream)
 {% endhighlight %}
 
-{:refdef: style="text-align: center;"}
-![](/images/post7-example002.png)
-{: refdef}
 
 # Propriedades escalares nodais
 
 A fim de exemplo, criei uma função que gera um conjunto de propriedades randomico, utilizando a função
-random do Python, mostrada abaixo. Os resultados posteriores, porém, são na verdade resultados de um
-projeto pessoal, que é resultado de um programa de elementos finitos. Resolvi deixar a função randomica
+random da Numpy, mostrada abaixo. Os resultados posteriores, porém, são na verdade de um
+projeto pessoal, provenientes de um programa de elementos finitos. Resolvi deixar a função randomica
 disponível aqui apenas para aqueles que querem juntar os pedaços e testar em casa ;)
 
 {% highlight python linenos %}
+import numpy as np
+random_data = np.random.rand(mesh.nx + 1, mesh.ny + 1)
 {% endhighlight %}
 
 Finalmente, para mapear essas propriedades para o VTK, pegamos o conjunto de pontos da malha não
@@ -135,7 +134,7 @@ esses degrades entro dos elementos). Apesar de eu não ter mostrado aqui, é tam
 diretamente para cada elemento.
 
 {:refdef: style="text-align: center;"}
-![](/images/post7-example003.png)
+![](/images/post7-example002.png)
 {: refdef}
 
 O Paraview é uma ferramenta suficientemente poderosa para visualização de grande quantidade de dados em 
