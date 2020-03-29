@@ -18,10 +18,10 @@ de performance de um simulador sobre o problema da cavidade.
 
 # Visão geral do problema & implementação
 
-Um problema clássico, ensinado nos cursos de graduação e pós-graduação em engenharia mecânica, é o problema
+Um problema clássico, ensinado em cursos de métodos computacionais em mecânica dos fluidos, é o problema
 da cavidade (Lid driven cavity). Resolve-se as equação de
-Navier-Stokes sem termo fonte, assumindo um
-fluido incompressível, em um domínio quadrado (embora existam versões que
+Navier-Stokes, assumindo um
+fluido newtoniano e incompressível, em um domínio quadrado (embora existam versões que
 resolvem o domínio tridimensional), cujas bordas laterais e inferior estão fechadas, enquanto a superior
 contém uma "tampa" com velocidade constante na direção x, conforme ilustração abaixo.
 
@@ -31,8 +31,9 @@ contém uma "tampa" com velocidade constante na direção x, conforme ilustraç�
 
 As equações relevantes são resumidas abaixo. As incógnitas são os campos de velocidade $u$, $v$ e o de pressão $P$, enquanto
 a distribuição das outras propriedades são conhecidas e constantes, tanto no espaço quanto no tempo. A discretização
-não é mostrada aqui, mas foi utilizado o método dos volumes finitos em uma malha staggered, e as equações
-foram mantidas em forma residual. Um solver não linear (método de Newton) foi utilizado para resolver cada passo de tempo.
+não é mostrada aqui, mas foi utilizado o método dos volumes finitos em uma malha staggered,
+resultando em um sistema algébrico de equações não lineares, que é
+resolvido de maneira acoplada, utilizando o método de Newton, em cada passo de tempo.
 
 $$
 \frac{\partial u}{\partial x} + 
@@ -133,24 +134,23 @@ o que me permite iniciar uma discussão de aprofundamento.
 # Discussão, experimento e análise
 
 O cuidado com o experimento é tão importante quanto (ou mais que) saber utilizar a ferramenta.
-Para ilustrar essa questão, considere dois
-casos distintos:
+Para ilustrar essa questão, considere dois casos distintos:
 
-- Malha pequena + tempo final grande (passo de tempo pequeno)
-- Malha grande + tempo final pequeno (passo de tempo grande)
+- Malha grossa (ou pouco refinada) + tempo final grande (passo de tempo pequeno)
+- Malha fina (ou refinada) + tempo final pequeno (passo de tempo grande)
 
 Será que os dois experimentos
-vão acusar os mesmos problemas de performance? Qual é mais relevante? Talvez uma malha grande com um
+vão acusar os mesmos problemas de performance? Qual é mais relevante? Talvez uma malha fina com um
 tempo de simulação também grande? Nem sempre. Se estivessemos no contexto em que o solver faz parte da
-função objetivo de um processo de otimização, talvez uma malha pequena fosse suficiente, por exemplo.
+função objetivo de um processo de otimização, talvez uma malha mais grosseira fosse suficiente, por exemplo.
 
-Claro que sempre vai ter quem argumente "Mas o melhor seria uma malha grande e um tempo de simulação grande
+Claro que sempre vai ter quem argumente "Mas o melhor seria uma malha fina e um tempo de simulação grande
 também, pois aí eu cubro todos os casos". Um possível argumento contra isso é que você deveria
 observar as limitações e restrições de projeto, para tentar ser mais efetivo com o menor esforço possível.
 Eu vejo isso como aquela velha história: Se você atirar com um canhão, provavelmente vai matar a mosca,
 mas vai te custar muito mais.
 
-Discussões filosóficas à parte, aqui vamos avaliar um caso com uma malha pequena, mas um tempo de simulação
+Discussões filosóficas à parte, aqui vamos avaliar um caso com uma malha grossa, mas um tempo de simulação
 suficientemente grande para atingir regime permanente. Mostro abaixo as primeiras 5 linhas de duas rodadas
 do cProfile no meu código de exemplo. Na primeira, as chamadas estão ordenadas pelo cumtime
 (Tempo acumulado na função + todas as subfunções chamadas a partir da mesma). Já a segunda está ordenada
@@ -170,9 +170,9 @@ pelo totime (Tempo total despendido em uma função, sem considerar a chamada da
 {% endhighlight %}
 
 Pela característica da implementação ser basicamente "linear" (run_solver chama time_stepper, que chama
-o solver, que chama a minpack, ...), para esse caso específico, a primeira análise não nos diz muito,
+o solver, que chama a minpack, ...), para esse caso específico, o primeiro resultado não nos diz muito,
 se considerarmos apenas os cinco maiores "gargalos" ordenados pelo tempo acumulado. Olhando por essa
-métrica, talvez possíveis "melhorias" seriam tentar diminuir o tamanho da malha, pra que cada solução do sistema
+métrica, talvez possíveis "melhorias" seriam tentar engrossar ainda mais a malha, pra que cada solução do sistema
 linear fosse mais rápido, ou aumentar o passo de tempo, para que seja consumido menos tempo no time stepper.
 
 {% highlight python linenos %}
@@ -190,7 +190,7 @@ linear fosse mais rápido, ou aumentar o passo de tempo, para que seja consumido
    700753    0.126    0.000    0.126    0.000 staggered_grid.py:18(__len__)
 {% endhighlight %}
 
-Para a segunda análise, é possível notar que um dos maiores gargalos do sistema em relação a tempo total
+Para o segundo conjunto de resultados, é possível notar que um dos maiores gargalos do sistema em relação a tempo total
 dispendido é a função resíduo. É possível observar que ela é custosa por dois motivos: (1) cada
 chamada dela é custosa por si só e (2) ela é chamada muitas (ncalls=12293) vezes. Com essa informação,
 algumas alternativas para diminuir o tempo de execução são possíveis. Por exemplo, uma alternativa seria
