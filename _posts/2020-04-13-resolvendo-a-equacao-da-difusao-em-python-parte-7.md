@@ -62,7 +62,7 @@ do atributo nbytes, disponível em qualquer ndarray:
 {% endhighlight %}
 
 Uma discussão a parte, seria a de trabalhar para evitar guardar a matriz A,
-por exemplo, por meio de um algoritmo TDMA ou semelhantes. Porém,
+por exemplo, por meio de um algoritmo [TDMA](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm) ou semelhantes. Porém,
 nesse post, eu quis apenas mostrar o uso das estruturas de matrizes esparsas 
 da SciPy, e como uma modificação simples em um código existente torna o mesmo
 capaz de resolver uma gama consideravelmente maior de problemas. As estruturas
