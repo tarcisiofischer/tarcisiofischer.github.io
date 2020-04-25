@@ -11,8 +11,8 @@ relacionados à implementação do mesmo. Já aviso que sacrifiquei o rigor mate
 para relaxar um pouco o post, na expectativa de torná-lo mais legível àqueles
 com pouca familiaridade no tema. A ideia é que, quem conhece o método, pode
 simplesmente passar o olho e ter uma visão geral do que vai ser implementado
-em posts futuros, enquanto que, aqueles que ainda estão aprendendo, podem
-fazer uma leitura mais gradual.
+em posts futuros, enquanto que, aqueles que estão aprendendo ou desconhecem,
+podem fazer a leitura sem se preocupar com detalhes.
 
 {:refdef: style="text-align: center;"}
 ![](/images/2020-04-27/img001.png)
@@ -32,7 +32,7 @@ $$
 \frac{\omega^{2}}{c^{2}(\mathbf{x})} p(\mathbf{x}, \omega)
 - i \omega \eta(\mathbf{x}) p(\mathbf{x}, \omega)
 + \nabla^{2} p(\mathbf{x}, \omega)
-+ s(\mathbf{x}, \omega) = 0 \quad \forall p \in \Omega
++ s(\mathbf{x}, \omega) = 0 \quad \forall \mathbf{x} \in \Omega
 $$
 
 Queremos encontrar um campo escalar $p(\mathbf{x}, \omega)$ que, dados campos
@@ -44,11 +44,17 @@ buscando uma aproximação da solução, utilizando o método dos elementos fini
 ![](/images/2020-04-27/img002.png)
 {: refdef}
 
-Se a equação possui valor zero em qualquer parte do domínio de interesse, então, se
-multiplicarmos a mesma por uma função arbitrária $h$, ela se manterá zero.
+Se a equação possui valor zero para todo $\mathbf{x}$ no domínio de interesse, então, se
+multiplicarmos a mesma por uma função arbitrária $h$, continuará zero.
 Essa função $h$ é normalmente chamada de "função de teste" ou "função peso".
 Como isso é verdade para qualquer parte do domínio, será também para
-o domínio como um todo, portanto, podemos integrar, obtendo a equação:
+o domínio como um todo, portanto, podemos integrar, obtendo a equação abaixo.
+Essa explicação poderia ser bem melhor trabalhada, utilizando argumentações
+relacionadas ao método dos resíduos ponderados, e tendo um cuidado maior ao
+explicar as propriedades que a função $h$ deve carregar. Porém, a titulo de
+simplificar a leitura do leitor, sigo sem maiores rigores. Daqui em diante,
+leia "para qualquer $h$" como "para qualquer $h$ contendo as propriedades
+necessárias".
 
 $$
 \int_{\Omega} \left({\frac{\omega^2}{c^2\left( \mathbf{x}\right)}}
@@ -57,11 +63,9 @@ p\left(  \mathbf{x},\omega\right)  +\nabla^{2}p\left(  \mathbf{x}%
 ,\omega\right)  +s\left(  \mathbf{x},\omega\right)  \right)  h\ d\Omega = 0 \quad \forall h
 $$
 
-A equação em formato
-integral é chamada de "forma fraca". A partir daí, trabalhamos 
-para aparecerem as condições de contorno e para evitar a necessidade de funções muito suaves (por
-conta da dependência do laplaciano). Para pular o rigor matemático, tomemos
-como verdade a seguinte relação:
+A partir daí, trabalhamos 
+para aparecerem as condições de contorno e para remover a dependência do laplaciano.
+Para pular o rigor matemático, tomemos como verdade a seguinte relação:
 
 $$
 \int_{\Omega}\nabla^{2}p\ h\ d\Omega=\int_{\Gamma}\left(  \nabla ph\right)
@@ -88,14 +92,11 @@ A partir desse ponto, buscamos um campo escalar $p$ que satisfaça a equação
 em sua forma fraca. A priori, parece que pioramos o problema, pois, além de termos uma equação
 diferencial, temos também integrações no domínio. Essa etapa ataca essa questão,
 montando um sistema de equações linear. Porém, introduz um novo problema,
-que é a de determinar uma "função de forma", como veremos a seguir.
+que é a de determinar uma função $N$, como veremos a seguir.
 
-Separamos o campo vetorial $p$ e a função de teste $h$ em duas partes:
-uma que provê a forma da função, com magnitude unitária, e a outra que provê as
-magnitudes dessa forma.
-Assumimos que conhecemos tal função de forma, e chamamos a mesma $N$, porém, desconhecemos
-as magnitudes da distribuição de valores, $P$. Sendo assim, podemos
-reescrever esses campos no formato abaixo.
+Separamos o campo escalar $p$ e a função de teste $h$ em duas partes:
+$N$, contendo apenas as variações, com magnitude unitária, e $P$, que provê as
+magnitudes. Sendo assim, podemos reescrever esses campos no formato abaixo.
 
 $$
 p(\mathbf{x}, \omega) = N(\mathbf{x}) P(\omega)
@@ -105,10 +106,9 @@ $$
 \nabla p(\mathbf{x}, \omega) = \nabla N(\mathbf{x}) P(\omega) = B(\mathbf{x}) P(\omega)
 $$
 
-E como a equação em sua forma fraca é válida para qualquer $h$, escolhemos
-alguns $h$ representáveis de forma análoga. Essa escolha poderia ser feita
-de outro modo, visto que não existe necessariamente relação entre as formas
-de uma $H$ e $P$.
+Fazemos o mesmo para a função arbitrária $h$. Note que essa escolha poderia ser
+feita de outro modo, visto que não existe necessariamente relação entre $h$ e
+$p$.
 
 $$
 h(\mathbf{x}, \omega) = N(\mathbf{x}) H(\omega)
@@ -117,7 +117,7 @@ $$
 Para encurtar o post, mostro diretamente a equação resultante.
 Aqui, o detalhe importante é que $P$
 e $H$ podem ser extraídos da integral, agora que independem de $\mathbf{x}$ e,
-como assumimos que conhecemos as funções de forma $N$ e seus gradientes $B$, não há mais
+como assumimos que conhecemos a função $N$ e seu gradiente $B$, não há mais
 incógnitas dentro das integrais.
 
 $$
@@ -146,13 +146,13 @@ $$
 Para que a equação anterior se torne um sistema linear de equações, precisamos
 ser capazes de computar $K$ e $f$, e discretizar $P$.
 
-Uma função de forma é construída a partir de um conjunto de funções menores.
-Teóricamente, a função de forma poderia ser qualquer função. Porém, a fim de
+Teóricamente, a função $N$ poderia ser qualquer função (dado um conjunto
+de propriedades, tais como ser contínua e diferenciável). Porém, a fim de
 facilitar encontrar a solução do problema, escolhe-se uma função que pode ser
-"quebrada" em várias funções menores. Cada função independe de todas as outras,
-mas a composição delas forma a solução final. Não posso deixar de mostrar o
-exemplo clássico para o caso unidimensional. A situação é análoga para casos em
-outras dimensões.
+repartida em funções menores. Cada função independe de todas as outras,
+mas a composição aditiva delas provê a "forma" da solução final. Não posso deixar de
+mostrar a imagem que é um exemplo clássico, para o caso unidimensional. A
+situação é análoga para casos em outras dimensões.
 
 {:refdef: style="text-align: center;"}
 ![](/images/2020-04-27/img003.png)
@@ -249,8 +249,13 @@ global. Fato que auxilia na solução de grandes sistemas lineares.
 
 Por fim, existem várias formas de computar as integrais (agora por elemento).
 Por exemplo, poderiam-se computa-las analiticamente, visto que agora todos
-os termos são conhecidos. Porém, é bastante comum utilizar uma quadratura de 
-Gauss (Quadratura Gaussiana). Inclusive várias fontes, sejam livros clássicos
+os termos são conhecidos, para esse caso. Isso não é sempre verdade, visto
+que dependendo da escolha do elemento isso pode ser muito difícil ou até
+impossível.
+
+De qualquer forma, é bastante comum utilizar uma quadratura de 
+Gauss (Quadratura Gaussiana), como alternativa à integral analitica.
+Inclusive várias fontes, sejam livros clássicos
 ou páginas da web, trazem os parâmetros ou mesmo o procedimento completo.
 
 $$
@@ -263,17 +268,19 @@ K_{e} = \omega\sum_{i=0}^{3} w_{i} \mu_{i} N^{T} N \ dJ\\
 -\sum_{i=0}^{3} w_{i} B^{T} B \ dJ
 $$
 
-Onde $w_i = 1\ \forall i$ e $dJ = \text{det}(\nabla^T N \cdot X)$. E, por fim,
+Onde, para esse caso, $w_i = 1\ \forall i$ (isso não é sempre dessa forma,
+depende, por exemplo, da ordem da quadratura), e $dJ = \text{det}(\nabla^T N \cdot X)$. Por fim,
 
 $$
 f_{e} = -\sum_{i=0}^{3} N_{e}^{T} N S_{e} \ dJ
 $$
 
-Salvo alguns detalhes, acredito que, a partir daqui, poderiamos implementar
-esse problema em Python. Infelizmente, esse post ficou demasiado extenso pra
-colocar algo relacionado à implementação. Por isso, vou parar por aqui e deixar-la
-pra uma próxima. O mais importante foi criar essa visão geral do equacionamento
-que será resolvido. Eu compreendo que ficaram vários detalhes para trás, então,
-sugestões ou críticas ao post são bem vindas!
+Salvo alguns detalhes, acredito que, a partir daqui, poderiamos seguir com a
+implementação, em Python. Infelizmente, esse post ficou demasiado extenso, por
+isso, vou parar por aqui e deixar-la pra uma próxima. O mais importante foi
+criar essa visão geral do que será resolvido. Eu compreendo que ficaram vários
+detalhes para trás, então, sugestões ou críticas ao post são bem vindas!
+Agradeço aos colegas de laboratório, Matheus Wenceslau, Jan-Michel e Paulo
+Bastos, pelas sugestões.
 
 Até a próxima!
