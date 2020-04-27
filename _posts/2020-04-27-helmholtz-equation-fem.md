@@ -3,8 +3,6 @@ layout: post
 title: Discretização da equação de Helmholtz em elementos finitos
 ---
 
-*ATENÇÃO: Post em processo de revisão.*
-
 Usarei esse projeto para,
 em posts futuros, começar a explorar diversos aspectos computacionais
 relacionados à implementação do mesmo. Já aviso que sacrifiquei o rigor matemático
