@@ -67,7 +67,7 @@ P.imag = big_x[len(P):2*len(P)]
 P = extract_complex_solution(solve(Ke, f))
 {% endhighlight %}
 
-Outras vantagem é a possibilidade de testar individualmente as funções,
+Outra vantagem é a possibilidade de testar individualmente as funções,
 módulos e pacotes. O uso de ferramentas de automação de testes é um assunto a
 parte que vai ser alvo de algum post futuro. Testes automatizados
 são importantes pois possibilitam um crescimento saudável do software. Nessa
@@ -78,7 +78,7 @@ Uma desvantagem que existe, em relação à separação de código em classes e
 funções, é que pode existir um custo computacional associado. Em geral, o
 argumento contra isso incluem: (1) em geral, as vantagens são mais relevantes;
 (2) se for realmente crítico, existem formas de contornar
-o problema (Por exemplo, em C++, forçando inlining de funções); (3) o custo,
+o problema; (3) o custo,
 em geral, é ínfimo perante ao tempo de execução total do sistema.
 
 
@@ -87,35 +87,29 @@ em geral, é ínfimo perante ao tempo de execução total do sistema.
 Voltando ao problema original, proponho começar pelo corpo principal do programa.
 Note que, a priori, nenhuma das funções foi ainda implementada. Inclusive,
 a forma como elas estão dispostas pode mudar, a medida que o código evolui,
-mas a ideia geral do corpo do programa está present.
+mas a ideia geral do corpo do programa está presente.
 Ademais, mostro a organização inicial do projeto na imagem abaixo, para
-referência. Lembrando que o projeto está disponível no
-GitHub, por [esse link](https://github.com/tarcisiofischer/helmholtz-solver).
+referência. Lembrando que o projeto
+[está disponível no GitHub](https://github.com/tarcisiofischer/helmholtz-solver).
 
 {:refdef: style="text-align: center;"}
 ![](/images/2020-05-04/img003.png)
 {: refdef}
 
 Escolhi essa organização de forma orgânica, simplesmente utilizando
-de conhecimentos passados, e imaginando seria a solução final. Essa parte é
+de conhecimentos passados, e imaginando como seria a solução final. Essa parte é
 bastante subjetiva - Conheço pessoas que preferem já esboçar uma hierarquia
 de classes desde o início, outras que preferem iniciar pelos testes, seguindo
-as ideias de TDD, e outras que preferem "utilizar apenas o mínimo possível" de
-conceitos, e fazer um grande programa principal colocando todas as variáveis,
-calculos e comentários. Cada uma dessas formas possui suas vantagens e
+as ideias de TDD, e outras que preferem "utilizar apenas o mínimo possível"
+, fazendo um grande programa de um arquivo, colocando todas as variáveis,
+cálculos e comentários. Cada uma dessas formas possui suas vantagens e
 desvantagens.
 
-Na verdade, não é raro eu iniciar um projeto com essa última,
-fazendo um grande script, quando eu tenho pouca ou nenhuma noção de como o
+Na verdade, não é raro eu iniciar um projeto com essa última abordagem,
+fazendo um grande arquivo, quando eu tenho pouca ou nenhuma noção de como o
 sistema vai ficar. Primeiro escrevo o programa inteiro e, a medida que vou
-reconhecendo módulos, extraio para uma função, que eventualmente migra para
-um módulo, e assim vai...
-
-A ideia agora é popular aos poucos os módulos e funções. Ainda não existem pacotes
-no projeto (E talvez nem tenha). Isso é um ponto importante: Não é só por que
-algo existe que deve sempre ser utilizado. Esse projeto ainda está
-em um nível demasiado simples, para existir a necessidade de adicionar pacotes,
-classes, etc. Essas coisas vêm com a evolução gradual do software.
+reconhecendo padrões, extraio funções, que eventualmente migram para
+módulos, e assim vai...
 
 **main.py**
 {% highlight python linenos %}
@@ -164,10 +158,16 @@ def _solve_linear_system(Ke, f):
     return None
 {% endhighlight %}
 
+A ideia agora é popular aos poucos os módulos e funções. Ainda não existem pacotes
+no projeto (E talvez nem tenha). Isso é um ponto importante: Não é só por que
+algo existe que deve sempre ser utilizado. Esse projeto ainda está
+em um nível demasiado simples, para existir a necessidade de adicionar pacotes,
+classes, etc. Essas coisas vêm com a evolução gradual do software.
+
 Por hora, esse código é uma forma bastante complexa de fazer nada. Por mais que
 isso seja verdade, é interessante notar a quantidade de conceito e carga teórica
 que já existe ali. É um trabalho de introduzir conceitos e intenções.
-Mesmo o código não fazendo nada, é (ou deveria ser) compreensível entender o que
+Mesmo o código não fazendo nada, é (ou deveria ser) compreensível o que
 ele se propõe a fazer. Obviamente, essa não é uma característica intrínseca da
 linguagem Python. Inclusive, em C++, por exemplo, esse código não seria muito
 diferente. Deixo a função main traduzida abaixo, apenas para fomentar essa
@@ -188,5 +188,8 @@ int main()
     return 0;
 }
 {% endhighlight %}
+
+Vou parando por aqui, e deixo a implementação própriamente dita como assunto
+para as próximas semanas. Agradeço ao Tarcísio Crocomo pelas sugestões.
 
 Até a próxima!
