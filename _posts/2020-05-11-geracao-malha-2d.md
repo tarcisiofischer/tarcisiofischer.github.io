@@ -135,4 +135,4 @@ std::function<double(double, double)> RegionFunctionBuilder::build()
 }
 {% endhighlight %}
 
-Até a próxima!
+Agradeço ao Bruno Klahr pelas sugestões. Até a próxima!
