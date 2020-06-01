@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Movendo código de um solver em Python para C++
+image: 2020-06-01/img001.png
 ---
 
 {:refdef: style="text-align: center;"}
