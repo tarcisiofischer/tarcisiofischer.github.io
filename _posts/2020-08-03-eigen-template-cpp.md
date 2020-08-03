@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Metaprogramação estática em C++ - Um estudo básico na Eigen
+title: Templates em C++, e um estudo básico na Eigen
 image: 2020-08-03/img001.png
 ---
 
@@ -9,7 +9,7 @@ image: 2020-08-03/img001.png
 {: refdef}
 
 
-Metaprogramação estática utilizando templates em C++ é geralmente motivo de
+Metaprogramação e templates em C++ são geralmente motivos de
 medo para muitos programadores. Templates podem ser muito complexos em geral,
 mas existem casos simples e, se você tem interesse em aprender essa ferramenta,
 sugiro começar exatamente por esses. Por outro lado, Eigen é uma biblioteca
@@ -175,7 +175,7 @@ ela bastante em projetos pessoais que precisem de uma estrutura de vetores com
 boa performance e, eventualmente, funções auxiliares ligadas à algebra linear.
 A Eigen é uma biblioteca header-only, de forma que não é necessário fazer nenhum
 tipo de linkagem para utiliza-la. Por isso, ela faz uso intenso de
-metaprogramação estática por meio de templates em C++.
+metaprogramação por meio de templates em C++.
 
 Apenas para mostrar brevemente um estudo de caso de uso de templates em C++,
 resolvi "garimpar" no código fonte da Eigen, a fim de descobrir como ela faz
