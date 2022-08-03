@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>Tarcisio Fischer - C++ Case study - Caveats while saving closures on objects</title>
+<link rel="stylesheet" href="styles.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/a11y-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/languages/cpp.min.js"></script>
+<script>
+    hljs.highlightAll();
+
+    window.onload = function() {
+        document.body.innerHTML = document.body.innerHTML.replaceAll(/`(.*?)`/g, "<code id=\"inline-code\">$1</code>");
+    }
+</script>
+</head>
+<body>
+<h1>C++ Case study: Caveats while saving closures on objects</h1>
+
+<a href="index.html">Back</a>
+
+<p>Lambda functions may be very useful, but some times it is necessary to watch out for subtle bugs that may arise. This post summarize a short story about one of those times.</p>
+
+<p>I've been developing a game called <a href="https://github.com/tarcisiofischer/pigs_game" target="_blank">Pig's Castle</a>, a 2D sidescroller platform game made entirely in C++ and SDL. The game is made with pixel art spritesheets for animation, which are basically big images with all the frames necessary to run an animation. For example, the image below contains the frames for `IDLE`, `RUNNING`, `DYING`, and others.</p>
+
+<center><img src="images/2021-03-30/pig80x80.png" width="300px" /></center>
+
+<p>For the animation handling an `Animation` class holds the information about the spritesheet and framerate for each animation. Each `Character` in the game has a `map` to associate each state to one `Animation` instance. The active animation in each `Character` depends on it's state.</p>
+
+<p>In the game, animations and states are separated in different layers. Actions that happen in the model layer affect the presentation layer by the means of states. There are, however, some cases which the state depends on something that is happening in the animation layer. For example, after taking damage, the character must change it's state to `TAKING_DAMAGE` but, after it's animation is done, the character state must be either updated to `IDLE` or `DYIED`.</p>
+
+<p>To avoid the dependency break, a callback can be inject in the `Animation` class, thus avoiding the direct dependency between the `Animation` and the character's state:</p>
+
+<pre><code class="language-cpp">
+void Animation::set_on_finish_animation_callback(std::function<void()> const& f)
+{
+   this->on_finish_animation = f;
+}
+
+void Animation::run(...)
+{
+// ...
+        if ((this->state % this->frames.size()) == 0) {
+            this->state = 0;
+            if (this->on_finish_animation) {
+                (*this->on_finish_animation)();
+            }
+        }
+// ...
+}
+</code></pre>
+
+<pre><code class="language-cpp">
+void Pig::connect_callbacks()
+{
+    this->animations.at(TAKING_DAMAGE_ANIMATION).set_on_finish_animation_callback([this]() {
+        this->is_taking_damage = false;
+        this->life -= 1;
+        if (this->life <= 0) {
+            this->is_dying = true;
+        }
+    });
+// ...
+}
+</code></pre>
+
+<pre><code class="language-cpp">
+auto pigs = std::vector<Pig>();
+int n_pigs = 10;
+for (int i = 0; i < n_pigs; ++i) {
+    pigs.push_back(Pig(/*...*/));
+}
+</code></pre>
+
+<p>The final (buggy) result is shown the gif below. The problem was that some pigs were getting stuck in the `TAKING_DAMAGE` or in `DYING` states. The root of the problem is that the `push_back` method from `vector` copies the pigs and, for each copy, the animations are also copied and the `on_finish_animation` lambdas are thus copied. But the lambda had a copy to the `this` pointer from the previous pig, not the copied one! Thus, the new closure is wrongly using a pointer to a pig that possibly doesn't exist anymore in the scene.</p>
+
+<center><img src="images/2021-03-30/bug_pigs.gif"></center>
+
+<p>There are some alternatives to mitigate the problem. One would be to modify the vector to be a vector of smart pointers to the characters. So that the copy would only happen in the pointers, not in the object itself. Other solution would be to avoid the capture list in the callback registration.</p>
+
+<p>However, I preferred a third option, which was to rewrite the pig's copy constructor, so that the callback is updated when it is being copied. That way, I don't need to modify the existing code. This solves the problem, and the result can be viewed in the gif below. For further study, I recommend reading the
+<a href="https://en.cppreference.com/w/cpp/language/rule_of_three" target="_blank">rules to copy constructors!</a></p>
+
+<center><img src="images/2021-03-30/fix_pigs.gif"></center>
+
+<br />
+<a href="index.html">Back</a>
+
+</body>
+</html>

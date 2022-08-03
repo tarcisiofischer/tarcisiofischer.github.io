@@ -1,0 +1,54 @@
+body {
+padding-right: 15%;
+padding-left: 15%;
+}
+
+* {
+    font-family: Hack, Verdana, Futura;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+body {
+    background-color: #222;
+    color: #AAA;
+}
+
+h1 {
+    font-size:28px;
+    color: #EEE;
+}
+
+h2 {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+a {
+    color: #EEE;
+}
+
+img#me {
+    width: 150px;
+    border-radius: 10%;
+}
+
+img {
+    border: 1px solid #555;
+}
+
+hr {
+    border: none;
+    width: 75%;
+    height: 1px;
+    color: #CCC;
+    background-color: #CCC;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+code#inline-code {
+    background-color: #333;
+    border-radius: 5%;
+    padding: 1px 6px 1px 6px;
+}
