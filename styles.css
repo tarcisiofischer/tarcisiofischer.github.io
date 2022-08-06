@@ -1,21 +1,23 @@
 body {
-padding-right: 15%;
-padding-left: 15%;
+    padding-right: 15%;
+    padding-left: 15%;
+    padding-top: 50px;
+    padding-bottom: 50px;
 }
 
 * {
-    font-family: Hack, Verdana, Futura;
+    font-family: sans-serif, Hack, Verdana, Futura, serif;
     font-size: 16px;
     line-height: 22px;
 }
 
 body {
-    background-color: #222;
+    background-color: #242930;
     color: #AAA;
 }
 
 h1 {
-    font-size:28px;
+    font-size: 28px;
     color: #EEE;
 }
 
@@ -33,10 +35,6 @@ img#me {
     border-radius: 10%;
 }
 
-img {
-    border: 1px solid #555;
-}
-
 hr {
     border: none;
     width: 75%;
@@ -51,4 +49,8 @@ code#inline-code {
     background-color: #333;
     border-radius: 5%;
     padding: 1px 6px 1px 6px;
+}
+
+.language-cpp {
+    font-family:  monospace;
 }
