@@ -1,0 +1,267 @@
+<html>
+<head>
+    <title>Tarcisio Fischer - Solving 2D diffusion equation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/a11y-dark.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/languages/cpp.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript"
+            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script>
+        hljs.highlightAll();
+
+        window.onload = function() {
+            document.body.innerHTML = document.body.innerHTML.replaceAll(/`(.*?)`/g, "<code id=\"inline-code\">$1</code>");
+        }
+    </script>
+</head>
+<body>
+<h1>Solving 2D diffusion equation in Python</h1>
+
+<a href="index.html">Back</a>
+
+<p>
+    The 2D diffusion equation is a very simple and fun equation to solve, from which we can generate quite pretty 2D
+    plots with. In this post I go through a set of ideas that I accumulated over the years while I was studying
+    similar problems. The post's idea is keep all this knowledge for myself if I ever need it again. A short
+    version of the differential equation can be expressed as
+
+    \[ \dot{f} = c \nabla^2 f + s \]
+
+    and we want to find a function of space and time \( f(X, t) \) that satisfies the equation above. \( c \) is a
+    constant and \( s(X, t) \) is a "source term".
+
+    Assuming a bidimensional domain, and using a finite differences discretization scheme for time and space, with an
+    equally spaced mesh of same size on both \( x \) and \( y \), which will be called just \( \Delta a \), the equation
+    can be rewritten as follows.
+
+    \[ \frac{f^{x,y} - f_o^{x,y}}{\Delta t} = c \Bigg{[} \frac{f^{x+1,y} - 2 f^{x,y} + f^{x-1,y}}{\Delta a^2} + \frac{f^{x,y+1} - 2 f^{x,y} + f^{x,y+1}}{\Delta a^2} \Bigg{]} + s^{x,y} \]
+
+    This generates the set of linear equations, for each element \( f^{x, y} \):
+
+    \[
+        [\Delta a^2 + 4 c \Delta t]f^{x,y}
+        c \Delta t f^{x+1, y}
+        c \Delta t f^{x-1, y}
+        c \Delta t f^{x, y+1}
+        c \Delta t f^{x, y-1} = \Delta a^2 f_o^{x, y} + \Delta a^2 \Delta t s^{x, y}
+    \]
+
+    Which can be written as a linear system \( Ax = b \) with \( N \times N \) equations, where \( N \) is the number
+    of elements in the discretized domain, \( A \) is a matrix of coefficients, \( x \) are the unknown and \( b \) is
+    a vector of known values, dependent on previous time and the source term.
+
+    \[
+    \begin{bmatrix}
+    \Delta a^2 + 4 c \Delta t & c \Delta t & 0 & ...\\
+    c \Delta t & \Delta a^2 + 4 c & c \Delta t & ...\\
+    0 & c \Delta t & \Delta a^2 + 4 c & ...\\
+    0 & 0 & c \Delta t & \ddots
+    \end{bmatrix}
+
+    \begin{bmatrix}
+    f^{0,0}\\
+    f^{1,0}\\
+    f^{2,0}\\
+    \vdots
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    \Delta a^2 f_o^{0,0} + \Delta a^2 \Delta t \ s^{0, 0}\\
+    \Delta a^2 f_o^{1,0} + \Delta a^2 \Delta t \ s^{1, 0}\\
+    \Delta a^2 f_o^{2,0} + \Delta a^2 \Delta t \ s^{2, 0}\\
+    \vdots
+    \end{bmatrix}
+    \]
+
+    For the boundary conditions, a simplification will be made in such a way that the values are assumed to be known and
+    equal to zero.
+</p>
+
+<p>
+    There are many ways to solve the linear system of equations. In this post, I compare the runtime for five possible
+    methods: (a) <a href="https://en.wikipedia.org/wiki/Invertible_matrix#Methods_of_matrix_inversion">matrix inversion</a>,
+    (b) <a href="https://en.wikipedia.org/wiki/LU_decomposition">LU decomposition</a>,
+    (c) sparse LU decomposition,
+    (d) <a href="https://en.wikipedia.org/wiki/Incomplete_LU_factorization">sparse ILU decomposition</a>
+    and (e) <a href="https://en.wikipedia.org/wiki/Generalized_minimal_residual_method">GMRes</a>.
+    I have no intention of implementing all those methods - They are all available in the
+    scipy library. In order to isolate each method, a common interface is proposed:
+
+<pre><code class="language-python">
+def solve_2d_inv_A():
+    x = np.dot(np.linalg.inv(A), b)
+    return x.reshape((N, N))
+
+def solve_2d_linalg_solve():
+    x = np.linalg.solve(A, b)
+    return x.reshape((N, N))
+
+def solve_2d_linalg_spsolve():
+    x = linalg.spsolve(sp_A_csr, b)
+    return x.reshape((N, N))
+
+def solve_2d_linalg_ilu():
+    invA = linalg.spilu(sp_A_csc)
+    x = invA.solve(b)
+    return x.reshape((N, N))
+
+def solve_2d_linalg_gmres():
+    x, _ = linalg.gmres(sp_A_csr, b)
+    return x.reshape((N, N))
+
+solver_names = [
+    'inv_A',
+    'dense_LU',
+    'sparse_LU',
+    'sparse_ILU',
+    'GMRes'
+]
+solver_name_to_function = {
+    'inv_A': solve_2d_inv_A,
+    'dense_LU': solve_2d_linalg_solve,
+    'sparse_LU': solve_2d_linalg_spsolve,
+    'sparse_ILU': solve_2d_linalg_ilu,
+    'GMRes': solve_2d_linalg_gmres,
+}
+</code></pre>
+
+The code to build the \( A \) matrix and the \( b \) vector is shown below:
+
+<pre><code class="language-python">
+def build_A():
+    to_flat_index = lambda x, y: x * N + y
+    A = np.zeros(shape=(N * N, N * N))
+    for i in range(N):
+        for j in range(N):
+            x = to_flat_index(i, j)
+
+            y = to_flat_index(i, j)
+            A[x, y] = ds**2 + 4 * c * dt
+            if i - 1 >= 0:
+                y = to_flat_index(i - 1, j)
+                A[x, y] = -c * dt
+            if i + 1 < N:
+                y = to_flat_index(i + 1, j)
+                A[x, y] = -c * dt
+            if j - 1 >= 0:
+                y = to_flat_index(i, j - 1)
+                A[x, y] = -c * dt
+            if j + 1 < N:
+                y = to_flat_index(i, j + 1)
+                A[x, y] = -c * dt
+    return A
+
+
+def build_b():
+    fo = np.zeros(shape=(N, N,))
+    fo[5:15, 5:15] = 10.0
+    b = ds ** 2. * fo.reshape((N * N,))
+    return b
+</code></pre>
+
+It is possible to verify how the runtime evolves with the mesh size in
+the table below. It is important to notice that iterative methods such as GMRes give an approximation of the solution,
+so it would be relevant to evaluate the accuracy of the result if adopting such methods.
+
+<table class="results-table">
+    <tr><td>N</td> <td>inv_A</td><td>dense_LU</td><td>sparse_LU</td><td>sparse_ILU</td><td>GMRes</td></tr>
+    <tr><td>10</td><td>  0.402125</td><td>   0.205415</td><td>   0.374370</td><td>    0.369797</td><td>  1.273823</td></tr>
+    <tr><td>15</td><td>  2.672651</td><td>   0.916614</td><td>   0.721103</td><td>    0.752904</td><td>  1.398468</td></tr>
+    <tr><td>20</td><td> 10.229078</td><td>   3.763351</td><td>   1.211724</td><td>    1.346811</td><td>  1.421030</td></tr>
+    <tr><td>25</td><td> 40.561536</td><td>  14.481547</td><td>   2.017594</td><td>    2.254834</td><td>  1.514201</td></tr>
+    <tr><td>30</td><td>       NaN</td><td>  38.811441</td><td>   2.959303</td><td>    3.436828</td><td>  1.646307</td></tr>
+    <tr><td>35</td><td>       NaN</td><td>        NaN</td><td>   3.828993</td><td>    4.631033</td><td>  1.825023</td></tr>
+    <tr><td>40</td><td>       NaN</td><td>        NaN</td><td>   5.206256</td><td>    6.056734</td><td>  1.865046</td></tr>
+</table>
+
+One last thing to mention is the memory issue in the current implementation will prevent us to grow the mesh too much.
+Only as an exercise, imagine how much memory would be required to store a \( N \times N \) mesh for a big \( N \)
+(The size of the matrix \( A \) is \( (N \times N)^2 \)). To solve this issue, it is important to notice that the matrix
+\( A \) is sparse. To take advantage of this property, it is possible to use Numpy's sparse structures, such as `coo_matrix`.
+The code for the assembly of the matrix would be something like the following:
+
+<pre><code class="language-python">
+coo_i = []
+coo_j = []
+coo_data = []
+def set_A(x, y, value):
+    coo_i.append(x)
+    coo_j.append(y)
+    coo_data.append(value)
+
+for i in range(N):
+    for j in range(N):
+        x = to_flat_index(i, j)
+        y = to_flat_index(i, j)
+        set_A(x, y, ds**2 + 4 * c * dt)
+        if i - 1 >= 0:
+            y = to_flat_index(i - 1, j)
+            set_A(x, y, -c * dt)
+        if i + 1 < N:
+            y = to_flat_index(i + 1, j)
+            set_A(x, y, -c * dt)
+        if j - 1 >= 0:
+            y = to_flat_index(i, j - 1)
+            set_A(x, y, -c * dt)
+        if j + 1 < N:
+            y = to_flat_index(i, j + 1)
+            set_A(x, y, -c * dt)
+
+A = coo_matrix((coo_data, (coo_i, coo_j)), shape=(N * N, N * N))
+</code></pre>
+
+
+</p>
+
+<p>
+All the previously mentioned methods are single-threaded. There's one parallel linear solver available on Intel MKL named
+[PARDISO (Parallel Direct Solver)](https://software.intel.com/en-us/articles/intel-mkl-pardiso), but by the time this post
+was written, it didn't have any Python bindings. There are several C++ to Python binding libraries out there, such as
+<a href="https://docs.python.org/3/library/ctypes.html">CTypes</a>,
+<a href="https://www.boost.org/doc/libs/1_70_0/libs/python/doc/html/index.html">Boost::Python</a>, or even <a href="https://cython.org/">Cython</a>.
+For this particular example, I used <a href="https://pybind11.readthedocs.io/en/stable/">Pybind11</a> to expose a pre-configured
+PARDISO solver to Python. By passing numpy arrays directly to the bindings, to avoid object copies, the function returns
+the `x` solution vector. The module code
+is available below. The code for PARDISO configuration itself is huge (and not really relevant, since it is just a matter of
+reading the docs and choosing parameters). With that implementation, it is possible to solve the same problem as before, but in a multithreaded
+environment, provided by PARDISO.
+
+<pre><code class="language-cpp">
+PYBIND11_MODULE(pypardiso, m)
+{
+    m.def("setup", &pardiso_setup);
+    m.def("solve",
+        [](
+            py::array_t<int> const& rows_A,
+            py::array_t<int> const& cols_A,
+            py::array_t<double> const& A,
+            py::array_t<double> const& py_b
+        )
+        {
+            auto n = int(py_b.size());
+            auto x = py::array_t<double>({size_t(n)});
+            pardiso_solve(A.data(), rows_A.data(), cols_A.data(), py_b.data(), x.mutable_data(), n);
+            return x;
+        }
+    );
+}
+</code></pre>
+
+This is a very brief overview on how to solve the 2d diffusion equation using some knowledge I acquired over the
+years while working on my Master's degree. Although <a href="https://github.com/tarcisiofischer/fwi-ls" target="_blank">the project from my Master's</a> was not
+related with the 2d diffusion equation, some mathematical and computational problems intersect, and thus having this
+parallel and simpler 2d side project was a good way to help me keep going at the time.
+
+</p>
+
+<br />
+<a href="index.html">Back</a>
+
+</body>
+</html>

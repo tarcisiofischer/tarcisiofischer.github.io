@@ -49,8 +49,23 @@ code#inline-code {
     background-color: #333;
     border-radius: 5%;
     padding: 1px 6px 1px 6px;
+    font-family:  monospace;
 }
 
 .language-cpp {
     font-family:  monospace;
+}
+
+.language-python {
+    font-family:  monospace;
+}
+
+.results-table {
+    margin: 20px;
+}
+
+.results-table td {
+    font-family: monospace;
+    padding: 10px;
+    padding-right: 50px;
 }
