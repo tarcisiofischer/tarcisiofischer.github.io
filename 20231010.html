@@ -1,0 +1,175 @@
+<html>
+<head>
+<title>Tarcisio Fischer - A quick tour on the Codevis project</title>
+<link rel="stylesheet" href="styles.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/a11y-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/languages/cpp.min.js"></script>
+<script>
+    hljs.highlightAll();
+
+    window.onload = function() {
+        document.body.innerHTML = document.body.innerHTML.replaceAll(/`(.*?)`/g, "<code id=\"inline-code\">$1</code>");
+    }
+</script>
+</head>
+<body>
+<h1>A quick tour on the Codevis project</h1>
+
+<a href="index.html">Back</a>
+
+<p>Has been a bit more than a year since I started in the Codevis project.
+It also has been a couple of months since <a target="_blank" href="https://www.youtube.com/live/oivJJiwIWIs?feature=share&t=5472">my presentation on Akademy 2023</a>, and I feel like it is time to
+write a bit about the software in a blog post. Tomaz Canabrava, which is also currently working in the Codevis project
+also <a target="_blank" href="https://tcanabrava.github.io/codevis-weekly-update/">started doing some writing</a>, so you may want to check those out too.</p>
+
+<p>
+<a target="_blank" href="https://invent.kde.org/sdk/codevis/">Codevis</a> is a software that helps you visualize your C++ codebase. It uses LLVM to scan C++ projects and generates a
+(relational) database representation of it. This database representation has basically two "levels":
+The "Physical design" and the "Logical design". The naming is taken from the ideas proposed by John Lakos in
+his books (If you don't have access to the books, you can take a look at
+<a target="_blank" href="https://www.youtube.com/watch?v=d3zMfMC8l5U">his presentations in C++ conferences</a>).
+</p>
+
+<p>
+The Physical design is a graph where the nodes are components representing a pair of [.cpp, .h] files and there is an
+edge between two nodes if there's a direct include directive between the entities. Folders are represented as Packages,
+which contain components inside. The Logical design is basically a graph where the nodes are the entities representing
+classes, structures, etc and the edges are some sort of dependency between them (uses-in-implementation,
+uses-in-interface, etc). The image below summarizes the idea. Although this sounds like UML, it is not quite that.
+I suggest reading the specifications in John Lakos books to understand the differences.
+</p>
+
+<center><img src="images/2023-10-10/phys-log-1.png" width="800px"></center>
+<small>Source: <a target="_blank" href="https://www.youtube.com/watch?v=lGZzN7WZ6EA">"C++ Modules and Large-Scale Development" ACCU 2019, John Lakos</a></small>
+
+<p>
+Bloomberg's BDE (Basic Development Environment) project is a set of foundational C++ libraries, composed by BSL
+(Basic Standard Library), BDL (Basic Development Library), BAL (Basic Application Library), and BBL
+(Basic Business Library). It is currently open source, and it is a good example of the kind of software Codevis can
+inspect. Those high-level libraries are called "package groups", and each of them have several "packages" inside. For
+instance, the BDL package group has the hierarchy shown below. That image was generated using Codevis.
+</p>
+
+<center><img src="images/2023-10-10/bdl.png"></center>
+
+<p>
+The project is organized in such a way that you have this level-oriented architecture, on which each package is allowed
+to depend on lower-level packages. There are no cyclic dependencies by design. Each package has a set of components
+inside. For instance, you can use Codevis o expand the contents of the bdld package (Basic Development Library Datum),
+which then results in the component architecture shown below. The BDL developers maintain a set of documentation files
+that holds a description for each package and a "Hierarchical Synopsis", which is basically a textual representation of
+this diagram.
+</p>
+
+<center><img src="images/2023-10-10/bdld.png"></center>
+
+<p>
+It is easy to imagine that not all software follows this kind of "levelized architecture" (for numerous reasons such as
+different organization, resource constraints, etc). For instance, in many open source software developers come and go,
+giving relevant contributions that we all appreciate, but not always following the existing software design, so you may
+get a mix of flavours. It really depends on the software and the people involved. One good benefit that Codevis brings
+is the possibility to inspect unknown codebases, so you can get an overview before touching the code. I find this
+particularly useful to be used side by side with the project's documentation.
+</p>
+
+<p>
+In this post I want to bring one small example of using the Codevis tool with KDE software. KDE is a huge open source
+software with a nice and friendly community. They have projects for desktop and mobile, from libraries to applications.
+Their KDE Framework (KF), for instance, is a set of more than 80 libraries. Only to give you an idea of it's structure,
+I rendered a subset of those libraries on Codevis, which yields the image below.
+</p>
+
+<center><img src="images/2023-10-10/kf5.png"></center>
+
+<p>
+The KF developers organized the project using "tiers". According to their documentations, Tier 1 Frameworks have no
+dependencies within Frameworks and only need Qt and other relevant libraries. Tier 2 Frameworks can depend only on
+Tier 1. Tier 3 Frameworks can depend on other Tier 3 Frameworks as well as Tier 2 and Tier 1. To generate the image
+above, I created a small Codevis plugin using Python to color the different Tiers. Tier 1 is in yellow; Tier 2 is in
+blue and Tier 3 is in green. The relevant part of the python plugin that does that is as follows:
+</p>
+
+<pre><code class="language-python">
+for e in h.getAllEntitiesInCurrentView():
+    if e.getName() in TIER1:
+        e.setColor(YELLOW)
+    elif e.getName() in TIER2:
+        e.setColor(BLUE)
+    elif e.getName() in TIER3:
+        e.setColor(GREEN)
+</code></pre>
+
+<p>
+We've been working on expanding the plugin system. Currently, it is possible to create plugins written in Python and C++.
+I may write a separate blog post only to explain the plugin mechanism, but in short, plugins can implement hooks that
+will be executed in specific places and each hook receives as parameter a handler, which can be used to interact with
+the software. So hooks are "where" you can do something and the handlers are "what" you can do at that moment.
+</p>
+
+<p>
+KDE also has many applications (Codevis itself being one of the applications under the KDE umbrella at the moment). For
+instance, Konsole is a desktop application built on top of the KDE Frameworks that, differently from BDE, is not
+organized in package groups. The components and packages are placed in different levels and, because of that, the first
+image from Codevis is a bit busy, and perhaps not very interesting:
+</p>
+
+<center><img src="images/2023-10-10/konsole_overview.png"></center>
+
+<p>
+But if filter out a specific package and try to understand it, it is much easier to spot what is going on. For instance,
+the image below shows the physical design of the "Session" package inside the Konsole project. We can see several cyclic
+dependencies which we don't know if are intentional. Codevis has a cyclic-dependency plugin that can be used to paint
+all the cycles. I'm using it to paint the particular cycle between the "Session" and "SessionController" components. As
+an exercise, we'll dive into the code to understand what exactly is causing it.
+</p>
+
+<center><img src="images/2023-10-10/cycle.png"></center>
+
+<p>
+It turns out, the "Session" component depends on the "SessionController" only in two very specific places with very
+similar code (See below). So one way of avoiding the dependency between the "Session" to the "SessionController" would
+be to make a signal (or a callback, or any similar mechanism) in such a way that the session controller can inject code
+in the Session, instead of being called directly. This is, of course, just an idea that may or may not be worth
+implementing, as I don't have all the specific details behind the reason why the code is the way it currently is. Would
+this change affect performance? Would this change affect a design pattern within Konsole codebase? Those are only a few
+questions to consider before jumping into any "design improvement".
+</p>
+
+<pre><code class="language-cpp">
+void Session::silenceTimerDone()
+{
+    // ...
+    if (view->sessionController()->isMonitorOnce()) {
+        view->sessionController()->actionCollection()->action(QStringLiteral("monitor-silence"))->setChecked(false);
+    }
+    // ...
+}
+</code></pre>
+
+<p>
+It is up to the developer to decide whether the software architecture makes sense the way it is – Codevis only shows
+you the current truth. Also, the example I just gave would be enough to break one cycle, but in the same package there
+would be still other cycles to tackle, if we are aiming to a end up with a levelized architecture similar to what we
+have in BDE. One idea that we (Codevis team) have on the back of our minds, and eventually we talk about, would be to
+communicate Codevis with the developer's editor (such as Kate or Kdevelop), in such a way that you can visualize your
+architecture as you develop it, thus avoiding any undesired aspect as soon as you create them. This is not done yet,
+though.
+</p>
+
+<p>
+In this post, I gave a brief overview of things that are possible to do with our Codevis tool. From inspecting existing
+codebases to visually check if the architectural requirements are being met, to understanding unknown codebases and the
+interactions between inner packages and external libraries – My feeling is that Codevis is a useful tool in different
+scenarios. Just to give one more example we also have a code coverage plugin that extracts the information from other
+tools to visualize how much of your code is being covered by tests, in a more graphical perspective. If you got
+interested in the project, feel free to give it a try or even start hacking and
+<a target="_blank" href="https://invent.kde.org/sdk/codevis/">send us some contributions</a> maybe? :)
+</p>
+
+<br />
+<a href="index.html">Back</a>
+
+</body>
+</html>
