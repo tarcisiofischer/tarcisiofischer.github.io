@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<channel>
+    <title>Tarcisio Fischer</title>
+    <link>https://tarcisiofischer.github.io/</link>
+    <description>My personal website - thoughts and projects.</description>
+    <language>en-us</language>
+    <lastBuildDate>10 Oct 2023 00:00:01 GMT</lastBuildDate>
+    <docs>https://www.rssboard.org/rss-specification</docs>
+    <atom:link href="https://tarcisiofischer.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+        <title>A quick tour on the Codevis project</title>
+        <pubDate>10 Oct 2023 00:00:01 GMT</pubDate>
+        <link>https://tarcisiofischer.github.io/20231010.html</link>
+        <guid>https://tarcisiofischer.github.io/20231010.html</guid>
+        <description>
+            Has been a bit more than a year since I started in the Codevis project. It also has been a couple of months since my presentation on Akademy 2023, and I feel like it is time to write a bit about the software in a blog post.
+        </description>
+    </item>
+    <item>
+        <title>C++ Case study: Caveats while saving closures on objects</title>
+        <pubDate>30 Mar 2021 00:00:01 GMT</pubDate>
+        <link>https://tarcisiofischer.github.io/20210330.html</link>
+        <guid>https://tarcisiofischer.github.io/20210330.html</guid>
+        <description>
+            Lambda functions may be very useful, but sometimes it is necessary to watch out for subtle bugs that may arise. This post summarize a short story about one of those times.
+        </description>
+    </item>
+    <item>
+        <title>Solving 2D diffusion equation in Python</title>
+        <pubDate>01 Apr 2020 00:00:01 GMT</pubDate>
+        <link>https://tarcisiofischer.github.io/20200401.html</link>
+        <guid>https://tarcisiofischer.github.io/20200401.html</guid>
+        <description>
+            The 2D diffusion equation is a very simple and fun equation to solve, from which we can generate quite pretty 2D
+            plots with. In this post I go through a set of ideas that I accumulated over the years while I was studying
+            similar problems.
+        </description>
+    </item>
+</channel>
+</rss>
